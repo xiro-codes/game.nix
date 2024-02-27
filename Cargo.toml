@@ -1,0 +1,45 @@
+[package]
+name = "game"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = { version = "0.13", default-features = false, features = [
+  "multi-threaded",     # Run with multithreading
+  "bevy_asset",         # Assets management
+  "bevy_audio",         # Builtin audio
+  "bevy_gilrs",         # Gamepad input support
+  "bevy_scene",         # Scenes management
+  "bevy_winit",         # Window management (cross-platform Winit backend)
+  "bevy_render",        # Rendering framework core
+  "bevy_core_pipeline", # Common rendering abstractions
+  "bevy_gizmos",        # Support drawing debug lines and shapes
+  "bevy_sprite",        # 2D (sprites) rendering
+  "bevy_text",          # Text/font rendering
+  "bevy_ui",            # UI toolkit
+  "animation",          # Animation support
+  "default_font",       # Embed a minimal default font for text/UI
+
+  "asset_processor",      # Asset processing
+  "serialize",            # Support for `serde` Serialize/Deserialize
+  # Platform-specific:
+  "wayland",              # (Linux) Support Wayland windowing system
+
+  # Development/Debug features:
+  "dynamic_linking",   # Dynamic linking for faster compile-times
+]}
+bevy_sepax2d = { path = "./bevy_sepax2d" }
+
+rand = "0.8.5"
+
+[features]
+debug = ["bevy_sepax2d/debug"]
+editor = []
+
+[workspace]
+members = [
+  "bevy_sepax2d",
+]
+[[bin]]
+name = "one"
+path = "./src/bin/one.rs"
