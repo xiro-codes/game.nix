@@ -29,7 +29,8 @@ bevy = { version = "0.13", default-features = false, features = [
   "dynamic_linking",   # Dynamic linking for faster compile-times
 ]}
 bevy_sepax2d = { path = "./bevy_sepax2d" }
-
+typed-builder = "0.18"
+bevy_ecs_tilemap = { git = "https://github.com/rparrett/bevy_ecs_tilemap.git", branch="bevy13"} 
 rand = "0.8.5"
 
 [features]
@@ -40,6 +41,7 @@ editor = []
 members = [
   "bevy_sepax2d",
 ]
+
 [[bin]]
-name = "one"
-path = "./src/bin/one.rs"
+name = "two"
+path = "./src/bin/two.rs"

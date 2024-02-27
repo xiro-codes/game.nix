@@ -36,12 +36,12 @@
         vulkan-headers
         wayland
         vulkan-validation-layers
-        ctags
+        universal-ctags
         ;
       inherit (pkgs.lib) readFile makeLibraryPath;
     in
       pkgs.mkShell {
-        packages = [cmake customNeovim.neovim ctags];
+        packages = [cmake customNeovim.neovim universal-ctags];
         buildInputs = [
           clang
           pkg-config
@@ -56,6 +56,7 @@
           vulkan-headers
           vulkan-tools
           vulkan-loader
+          libxkbcommon
         ];
 
         RUSTC_VERSION = readFile ./rust-toolchain;

@@ -32,7 +32,6 @@
     dashboard.startify = {
       enable = true;
       sessionDir = "~/.config/nvim/sessions";
-      sessionAutoload = true;
       sessionPersistence = true;
       sessionSort = true;
       changeToVCRoot = true;
@@ -56,7 +55,7 @@
     luaConfigRC = {
       lspkeybinds = ''
         local cmp = require('cmp')
-        vim.opt.spellsuggest = "best,9";
+        vim.opt.spellsuggest = "best,9"
         vim.opt.smartindent = true
         vim.opt.autoindent = true
         vim.api.nvim_create_autocmd('LspAttach', {
@@ -133,6 +132,7 @@
       '';
       usefull_shit = ''
         set nowrap
+        set iskeyword-=_
         set formatoptions-=cro
         autocmd BufWritePre * %s/\s\+$//e
         autocmd FocusGained,BufEnter * :checktime
@@ -146,12 +146,22 @@
     filetree.nvimTree = {
       enable = true;
       actions.openFile.resizeWindow = true;
+      filters = {
+        exclude = [
+          ".direnv"
+          "target"
+        ];
+        dotfiles = true;
+        gitClean = false;
+        gitIgnored = true;
+        noBuffer = true;
+      };
     };
     autocomplete = {
       enable = true;
       type = "nvim-cmp";
     };
-    tabline.nvimBufferline.enable = true;
+    tabline.nvimBufferline.enable = false;
     telescope = {
       enable = true;
     };
