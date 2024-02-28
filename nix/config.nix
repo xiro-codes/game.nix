@@ -146,16 +146,6 @@
     filetree.nvimTree = {
       enable = true;
       actions.openFile.resizeWindow = true;
-      filters = {
-        exclude = [
-          ".direnv"
-          "target"
-        ];
-        dotfiles = true;
-        gitClean = false;
-        gitIgnored = true;
-        noBuffer = true;
-      };
     };
     autocomplete = {
       enable = true;

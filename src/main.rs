@@ -1,5 +1,6 @@
 use std::ops::Mul;
 
+use areas::{PlayArea, SafeArea, SpawnArea};
 use bevy::{
     ecs::query,
     gizmos,
@@ -17,8 +18,7 @@ use bevy_sepax2d::prelude::{
 };
 use rand::thread_rng;
 use rand::Rng;
-
-const BOUNDS: Vec2 = Vec2::new(1200.0, 640.0);
+pub const SCREEN_SIZE: Vec2 = Vec2::new(1200.0, 640.0);
 
 #[derive(Component)]
 struct Player {
@@ -51,20 +51,6 @@ enum Spawner {
     },
 }
 
-#[derive(Resource)]
-struct SpawnArea {
-    rect: Rect,
-}
-
-#[derive(Resource)]
-struct CenterArea {
-    rect: Rect,
-}
-#[derive(Resource)]
-struct PlayArea {
-    rect: Rect,
-}
-
 #[derive(Component)]
 struct Rock;
 #[derive(Component)]
@@ -85,12 +71,65 @@ enum MoveTo {
     #[default]
     None,
 }
+mod areas {
+    use bevy::prelude::*;
+
+    use crate::SCREEN_SIZE;
+    #[derive(Resource)]
+    pub struct SpawnArea {
+        pub(crate) rect: Rect,
+        #[cfg(debug)]
+        pub color: Color,
+    }
+    #[derive(Resource)]
+    pub struct SafeArea {
+        pub(crate) rect: Rect,
+        #[cfg(debug)]
+        pub color: Color,
+    }
+    #[derive(Resource)]
+    pub struct PlayArea {
+        pub(crate) rect: Rect,
+        #[cfg(debug)]
+        pub color: Color,
+    }
+    pub struct AreaPlugin;
+    impl Plugin for AreaPlugin {
+        fn build(&self, app: &mut App) {
+            app.insert_resource(SpawnArea {
+                rect: Rect::new(-SCREEN_SIZE.x, -SCREEN_SIZE.y, SCREEN_SIZE.x, SCREEN_SIZE.y),
+                #[cfg(debug)]
+                color: Color::RED,
+            })
+            .insert_resource(SafeArea {
+                rect: Rect::new(
+                    -SCREEN_SIZE.x / 3.,
+                    -SCREEN_SIZE.y / 3.,
+                    SCREEN_SIZE.x / 3.,
+                    SCREEN_SIZE.y / 3.,
+                ),
+                #[cfg(debug)]
+                color: Color::BLUE,
+            })
+            .insert_resource(PlayArea {
+                rect: Rect::new(
+                    -SCREEN_SIZE.x / 2.,
+                    -SCREEN_SIZE.y / 2.,
+                    SCREEN_SIZE.x / 2.,
+                    SCREEN_SIZE.y / 2.,
+                ),
+                #[cfg(debug)]
+                color: Color::BLUE,
+            });
+        }
+    }
+}
 fn main() {
     App::new()
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
-                    resolution: WindowResolution::new(BOUNDS.x, BOUNDS.y),
+                    resolution: WindowResolution::new(SCREEN_SIZE.x, SCREEN_SIZE.y),
                     title: "game".into(),
                     ..default()
                 }),
@@ -100,13 +139,27 @@ fn main() {
         ))
         .insert_resource(Time::<Fixed>::from_hz(60.0))
         .insert_resource(SpawnArea {
-            rect: Rect::new(-BOUNDS.x, -BOUNDS.y, BOUNDS.x, BOUNDS.y),
+            rect: Rect::new(-SCREEN_SIZE.x, -SCREEN_SIZE.y, SCREEN_SIZE.x, SCREEN_SIZE.y),
+            #[cfg(debug)]
+            color: Color::RED,
         })
-        .insert_resource(CenterArea {
-            rect: Rect::new(-BOUNDS.x / 3., -BOUNDS.y / 3., BOUNDS.x / 3., BOUNDS.y / 3.),
+        .insert_resource(SafeArea {
+            rect: Rect::new(
+                -SCREEN_SIZE.x / 3.,
+                -SCREEN_SIZE.y / 3.,
+                SCREEN_SIZE.x / 3.,
+                SCREEN_SIZE.y / 3.,
+            ),
+            #[cfg(debug)]
+            color: Color::BLUE,
         })
         .insert_resource(PlayArea {
-            rect: Rect::new(-BOUNDS.x / 2., -BOUNDS.y / 2., BOUNDS.x / 2., BOUNDS.y / 2.),
+            rect: Rect::new(
+                -SCREEN_SIZE.x / 2.,
+                -SCREEN_SIZE.y / 2.,
+                SCREEN_SIZE.x / 2.,
+                SCREEN_SIZE.y / 2.,
+            ),
         })
         .add_systems(Startup, setup_scene)
         .add_systems(
@@ -176,7 +229,7 @@ fn create_ui(cmds: &mut Commands) {
 fn draw_spawn_defs(
     mut gizmos: Gizmos,
     spawn: Res<SpawnArea>,
-    exlude: Res<CenterArea>,
+    exlude: Res<SafeArea>,
     play: Res<PlayArea>,
 ) {
     gizmos.rect_2d(Vec2::ZERO, 0., spawn.rect.size(), Color::RED);
@@ -277,7 +330,7 @@ fn spawn_ships(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     spawn: Res<SpawnArea>,
-    exlude: Res<CenterArea>,
+    exlude: Res<SafeArea>,
     time: Res<Time>,
     mut query: Query<(&mut Spawner, &Transform)>,
 ) {
@@ -323,7 +376,7 @@ fn spawn_rocks(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     spawn: Res<SpawnArea>,
-    exlude: Res<CenterArea>,
+    exlude: Res<SafeArea>,
     time: Res<Time>,
     mut query: Query<(&mut Spawner, &Transform)>,
 ) {
